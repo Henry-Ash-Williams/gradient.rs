@@ -7,6 +7,9 @@ pub use colour::Colour;
 mod builder;
 pub use builder::GradientBuilder;
 
+pub use anyhow::{anyhow, bail, Result};
+
+
 #[derive(Debug)]
 enum StyleOptions {
     Bold,
@@ -16,6 +19,7 @@ enum StyleOptions {
 }
 
 #[derive(Debug)]
+/// Representation of text with a gradient applied to it
 pub struct Gradient {
     start: Colour,
     end: Colour,
@@ -24,6 +28,7 @@ pub struct Gradient {
 }
 
 impl Gradient {
+    /// Generate a new gradient
     pub fn new(start: Colour, end: Colour, text: &str) -> Self {
         Self {
             start,
@@ -70,5 +75,23 @@ impl Gradient {
 impl Display for Gradient {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.format())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_gradient() -> Result<()> {
+        let g = GradientBuilder::new()
+            .text("Hello, World!".to_string())
+            .start_colour(Colour::from_hex(0x24f26f)?)
+            .end_colour(Colour::from_hex(0x8424f2)?)
+            .build()?;
+        let s = format!("{g}");
+
+        assert_eq!(s.len(), 299);
+        Ok(())
     }
 }
